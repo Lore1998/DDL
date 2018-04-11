@@ -15,19 +15,6 @@ create table categorias ( id bigint  auto_increment primary key, descricao varch
 create table lancamentos(id bigint  auto_increment  primary key,        descricao varchar (255),  dt_vencimento date, dt_pagamento date ,
                       	       valor decimal(10,2) unsigned ,             observacao text ,  tipo enum ('RECEITA', 'DESPESA')) engine=InnoDB default charset = utf8;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 alter table pessoas modify nome varchar(50) not null;
 alter table pessoas modify ativo tinyint not null;
 
