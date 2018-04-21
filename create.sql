@@ -1,7 +1,6 @@
 create database lancamentos_db;
 use lancamentos_db;
-
-create database db;create table pessoas ( id bigint auto_increment primary key,nome varchar (50),ativo tinyint) engine=InnoDB default charset = utf8;             
+create table pessoas ( id bigint auto_increment primary key,nome varchar (50),ativo tinyint) engine=InnoDB default charset = utf8;             
 
 create table contatos ( id bigint auto_increment primary key , nome varchar (50),email varchar (255),telefone varchar (14)) engine=InnoDB default charset = utf8;  ;
                         
