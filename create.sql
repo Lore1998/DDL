@@ -1,54 +1,34 @@
 create database lancamentos_db;
 use lancamentos_db;
-create table pessoas ( id bigint auto_increment primary key,nome varchar (50),ativo tinyint) engine=InnoDB default charset = utf8;             
 
-create table contatos ( id bigint auto_increment primary key , nome varchar (50),email varchar (255),telefone varchar (14)) engine=InnoDB default charset = utf8;  ;
-                        
-create table estados (sigla varchar (2), nome varchar (100)) engine=InnoDB default charset = utf8; 
-                       
-create table cidades (id bigint auto_increment primary key,  nome varchar (255) ) engine=InnoDB default charset = utf8;
-                       
-create table enderecos ( longradouro varchar (10), numero varchar (10),   bairro varchar (100),      cep varchar (20))engine=InnoDB default charset = utf8;
-                        
-create table categorias ( id bigint  auto_increment primary key, descricao varchar(100)) engine=InnoDB default charset = utf8; 
-                           
-create table lancamentos(id bigint  auto_increment  primary key,        descricao varchar (255),  dt_vencimento date, dt_pagamento date ,
-                      	       valor decimal(10,2) unsigned ,             observacao text ,  tipo enum ('RECEITA', 'DESPESA')) engine=InnoDB default charset = utf8;
-
-alter table pessoas modify nome varchar(50) not null;
-alter table pessoas modify ativo tinyint not null;
+-- Tabela de categorias
+CREATE TABLE categorias(   id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY ,  descricao VARCHAR(255) NOT NULL) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8;
 
 
-alter table contatos modify nome varchar (50) not null;
-alter table contatos modify email varchar (255) not null;
-alter table contatos modify telefone varchar (14) not null;
-alter table contatos add column pessoa_id bigint;
-alter table contatos add constraint pessoa_id_fk foreign key(pessoa_id) references pessoas(id) on delete cascade on update no action;
+-- Tabela de estados
+CREATE TABLE estados( sigla VARCHAR(2) NOT NULL PRIMARY KEY , nome VARCHAR(100) NOT NULL) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8;
 
 
-alter table enderecos modify longradouro varchar (10) not null;
-alter table enderecos modify numero varchar (10) not null;
-alter table enderecos modify bairro varchar (10) not null;
-alter table enderecos modify cep varchar (20) not null;
-alter table enderecos add column pessoa_id bigint;
-alter table enderecos add column cidade_id bigint;
-alter table enderecos add constraint pessoas_id_fk foreign key(pessoa_id) references pessoas(id) on delete cascade on update no action;
-alter table enderecos add constraint cidade_id_fk foreign key(cidade_id) references cidades(id) on delete cascade on update no action;
+-- Tabela de cidades
+CREATE TABLE cidades( id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,nome VARCHAR(255) NOT NULL, estado_sigla VARCHAR(2) NOT NULL, 
+CONSTRAINT fk_cidade_estados1 FOREIGN KEY (estado_sigla) REFERENCES estados (sigla) ON DELETE NO ACTION ON UPDATE NO ACTION) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8;
 
+-- Tabela de pessoas
+CREATE TABLE pessoas (id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,  nome VARCHAR(255) NOT NULL, ativo TINYINT(4) NOT NULL) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8;
 
-alter table estados modify sigla varchar (2) not null;
-alter table estados modify nome varchar (100) not null;
+-- Tabela de contatos
+CREATE TABLE contatos( id BIGINT(20) NOT NULL AUTO_INCREMENT primary key, nome VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, telefone VARCHAR(14) NOT NULL,
+  pessoa_id BIGINT(20) NOT NULL, CONSTRAINT fk_contatos_pessoa FOREIGN KEY (pessoa_id) REFERENCES pessoas (id) ON DELETE CASCADE ON UPDATE NO ACTION)ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
-alter table cidades modify nome varchar (255) not null;
-alter table cidades add column estado_sigla varchar (2);
-alter table cidades add constraint estados_sigla_fk foreign key(estado_sigla) references estados(sigla) on delete cascade on update no action;
+-- Tabela de enderecos
+CREATE TABLE enderecos(  pessoa_id BIGINT(20) NOT NULL, logradouro VARCHAR(255) NOT NULL, numero VARCHAR(45) NOT NULL, complemento VARCHAR(255) NOT NULL,
+  bairro VARCHAR(45) NOT NULL, cep VARCHAR(10) NOT NULL, cidade_id BIGINT(20) NOT NULL, CONSTRAINT fk_endereco_cidade1  FOREIGN KEY (cidade_id)  REFERENCES cidades (id) 
+    ON DELETE NO ACTION ON UPDATE NO ACTION, CONSTRAINT fk_endereco_pessoas1 FOREIGN KEY (pessoa_id)   REFERENCES pessoas (id) ON DELETE NO ACTION ON UPDATE NO ACTION)
+ENGINE = InnoDB DEFAULT CHARACTER SET = utf8;
 
-alter table categorias modify descricao varchar (100) not null;
-
-alter table lancamentos modify descricao varchar (255) not null;
-alter table lancamentos modify  dt_vencimento date not null;
-alter table lancamentos modify valor decimal (10,2) not null;
-alter table lancamentos add column pessoa_id bigint;
-alter table lancamentos add column categoria_id bigint;
- alter table lancamentos add constraint pesoa_id_fk foreign key(pessoa_id) references pesoa(id) on delete cascade on update no action;
-alter table lancamentos add constraint categorias_id_fk foreign key (categoria_id) references categorias (id) on  delete cascade on update no action;
+-- Tabela de lancamentos
+CREATE TABLE lancamentos( id BIGINT(20) NOT NULL AUTO_INCREMENT PRIMARY KEY, descricao VARCHAR(255) NOT NULL,dt_vencimento DATE NOT NULL,dt_pagamento DATE NULL DEFAULT NULL,
+valor DECIMAL(10,2) NOT NULL,observacao TEXT NULL DEFAULT NULL, tipo ENUM('RECEITA', 'DESPESA') NOT NULL,pessoa_id BIGINT(20) NOT NULL,categoria_id BIGINT(20) NOT NULL,
+CONSTRAINT fk_lancamento_pessoa1 FOREIGN KEY (pessoa_id) REFERENCES pessoas (id) ON DELETE CASCADE ON UPDATE NO ACTION, CONSTRAINT fk_lancamentos_categorias1
+    FOREIGN KEY (categoria_id) REFERENCES categorias (id) ON DELETE NO ACTION ON UPDATE NO ACTION) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8;
